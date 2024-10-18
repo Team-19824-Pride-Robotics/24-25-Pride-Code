@@ -109,7 +109,7 @@ public final class MecanumDrive {
 
     public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
 
-    public final Servo backWrist, frontWrist, armElbow, claw;
+
 
     public final VoltageSensor voltageSensor;
 

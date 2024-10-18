@@ -14,8 +14,8 @@ public class wrist {
     private Servo frontWrist;
 
     public wrist(HardwareMap hardwareMap) {
-        frontWrist = hardwareMap.get(Servo.class, "claw");
-        backWrist = hardwareMap.get(Servo.class, "claw");
+        frontWrist = hardwareMap.get(Servo.class, "frontWrist");
+        backWrist = hardwareMap.get(Servo.class, "backWrist");
     }
 
     public class turnWristVertical implements Action {
