@@ -68,29 +68,27 @@ public class jacksonTest extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // Declare our motors
-        // Make sure your ID's match your configuration
-//        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
-//        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
-//        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
-//        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
-
+       //Drive base config
+        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
+        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
+        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
+        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
+        //Mechanism config
        Servo claw = hardwareMap.servo.get("claw");
-        // make a Lift instance
        Servo backWrist = hardwareMap.servo.get("backWrist");
        Servo frontWrist = hardwareMap.servo.get("frontWrist");
-        Servo elbow = hardwareMap.servo.get("armElbow");
-       DcMotor motor = hardwareMap.dcMotor.get("motor");
+       Servo elbow = hardwareMap.servo.get("armElbow");
+       Servo horizontalSlides = hardwareMap.servo.get("horizontalSlide");
+       DcMotorEx verticalDownSlides = hardwareMap.get(DcMotorEx.class, "verticalDownSlides");
+       DcMotorEx verticalUpSlides = hardwareMap.get(DcMotorEx.class, "verticalUpSlides");
+        //Drivebase reversal
+        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
-
-        // Reverse the right side motors. This may be wrong for your setup.
-        // If your robot moves backwards when commanded to go forwards,
-        // reverse the left side instead.
-        // See the note about this earlier on this page.
-//        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
-//        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
-
-
+        //Various drive code variables
+        int spStage = -1;
+        boolean atOrigin = true;
+        int saStage = -1;
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -98,49 +96,115 @@ public class jacksonTest extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
+            //Claw controls
 
+            //close claw
             if (gamepad1.left_bumper){
                 claw.setPosition(0.1);
             }
+            //open claw
             if (gamepad1.right_bumper){
                 claw.setPosition(0.35);
             }
-            if (gamepad1.y){
-                backWrist.setPosition(0.5);
-                frontWrist.setPosition(0.5);
+            //These controls are to control the outtake so that it can score a specimen
+
+            //I think it would be best to control it in "stages" (Ex. Stage 0 is all the way down,
+            //Stage 1 is to score in 1st bucket, Stage 2 is to score in 2nd bucket) and when we are
+            //in the intake or moving it to sample positions, we'll set the score to a value like -1
+            //that this code will just ignore
+
+            //go up a stage if able
+            if (gamepad1.y && spStage>=0 && spStage < 3){
+                spStage = spStage+1;
+                saStage = -1;
+                atOrigin=false;
             }
-            if (gamepad1.a){
-                backWrist.setPosition(0.75);
-                frontWrist.setPosition(1);
+            //go down a stage if able
+            if (gamepad1.a && spStage>0 && spStage <= 3){
+                spStage = spStage - 1;
+
+            } //go to stage 1
+            if (gamepad1.b && atOrigin){
+                spStage = 0;
+                saStage = 0;
+                atOrigin=false;
             }
-            if (gamepad1.dpad_up){
-                elbow.setPosition(1);
+            if (spStage == 0) {
+                //go to stage 0
             }
-            if(gamepad1.dpad_down){
-                elbow.setPosition(0.5);
+            if (spStage == 1) {
+                //go to stage 1
             }
-//            double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
-//            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-//            double rx = -gamepad1.right_stick_x;
-
-
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio,
-            // but only if at least one is out of the range [-1, 1]
-//            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-//            double frontLeftPower = (y + x + rx) / denominator;
-//            double backLeftPower = (y - x + rx) / denominator;
-//            double frontRightPower = (y - x - rx) / denominator;
-//            double backRightPower = (y + x - rx) / denominator;
+            if (spStage == 2) {
+                //go to stage 2
+            }
 
 
 
 
-            // Send calculated power to wheels
-//            frontLeftMotor.setPower(frontLeftPower);
-//            backLeftMotor.setPower(backLeftPower);
-//            frontRightMotor.setPower(frontRightPower);
-//            backRightMotor.setPower(backRightPower);
+            //same deal as the previous code, but this is for the sample positions instead
+            //of the specimen positions
+            if (gamepad1.dpad_up && saStage>=0 && saStage < 3){
+                saStage = saStage+1;
+                spStage = -1;
+                atOrigin=false;
+            }
+            if (gamepad1.dpad_down && saStage>0 && saStage <= 3){
+                saStage = saStage - 1;
+
+            }
+            if (gamepad1.dpad_right && atOrigin){
+                saStage = 0;
+                spStage = 0;
+                atOrigin=false;
+            }
+            if (saStage == 0) {
+                //do nothing cuz sp and sa stage 0 are the same
+            }
+            if (saStage == 1) {
+                //go to stage 1
+            }
+            if (saStage == 2) {
+                //go to stage 2
+            }
+
+            // Bring claw back to origin
+            if(gamepad1.x) {
+                if ((saStage == 0 || spStage == 0) && !atOrigin) {
+                    //bring claw to origin
+                    atOrigin = true;
+                }
+            }
+
+
+            if(gamepad1.dpad_left){
+                if (!atOrigin && saStage!=0 && spStage !=0) {
+                //Bring slides down a little to hang a sample
+
+                }
+
+            }
+            //Drive code
+            double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = -gamepad1.right_stick_x;
+
+
+
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
+
+
+
+
+//             Send calculated power to wheels
+            frontLeftMotor.setPower(frontLeftPower);
+            backLeftMotor.setPower(backLeftPower);
+            frontRightMotor.setPower(frontRightPower);
+            backRightMotor.setPower(backRightPower);
 
 
         }
