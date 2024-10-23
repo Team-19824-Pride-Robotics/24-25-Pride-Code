@@ -53,7 +53,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Jackson cool town")
+@TeleOp(name="Jackson test")
 //@Disabled
 public class jacksonTest extends LinearOpMode {
 
@@ -69,10 +69,10 @@ public class jacksonTest extends LinearOpMode {
         telemetry.update();
 
        //Drive base config
-        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
-        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
-        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
-        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
+//        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
+//        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
+//        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
+//        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
         //Mechanism config
        Servo claw = hardwareMap.servo.get("claw");
        Servo backWrist = hardwareMap.servo.get("backWrist");
@@ -82,8 +82,8 @@ public class jacksonTest extends LinearOpMode {
        DcMotorEx verticalDownSlides = hardwareMap.get(DcMotorEx.class, "verticalDownSlides");
        DcMotorEx verticalUpSlides = hardwareMap.get(DcMotorEx.class, "verticalUpSlides");
         //Drivebase reversal
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+//        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+//        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         //Various drive code variables
         int spStage = -1;
@@ -100,11 +100,16 @@ public class jacksonTest extends LinearOpMode {
 
             //close claw
             if (gamepad1.left_bumper){
-                claw.setPosition(0.1);
+                backWrist.setPosition(0.99);
+                frontWrist.setPosition(0.99)
+                ;
+                elbow.setPosition(0.5);
             }
             //open claw
             if (gamepad1.right_bumper){
-                claw.setPosition(0.35);
+                backWrist.setPosition(-0.99);
+                frontWrist.setPosition(-0.99);
+                elbow.setPosition(0.5);
             }
             //These controls are to control the outtake so that it can score a specimen
 
@@ -112,6 +117,9 @@ public class jacksonTest extends LinearOpMode {
             //Stage 1 is to score in 1st bucket, Stage 2 is to score in 2nd bucket) and when we are
             //in the intake or moving it to sample positions, we'll set the score to a value like -1
             //that this code will just ignore
+
+            // MESSAGE IF YAJIE IS LOOKING AT CODE:
+            //Don't delete this without talking to me first!
 
             //go up a stage if able
             if (gamepad1.y && spStage>=0 && spStage < 3){
@@ -131,11 +139,14 @@ public class jacksonTest extends LinearOpMode {
             }
             if (spStage == 0) {
                 //go to stage 0
+                elbow.setPosition(0.8);
             }
             if (spStage == 1) {
+                elbow.setPosition(0.6);
                 //go to stage 1
             }
             if (spStage == 2) {
+                elbow.setPosition(0.6);
                 //go to stage 2
             }
 
@@ -162,9 +173,11 @@ public class jacksonTest extends LinearOpMode {
                 //do nothing cuz sp and sa stage 0 are the same
             }
             if (saStage == 1) {
+                elbow.setPosition(0.8);
                 //go to stage 1
             }
             if (saStage == 2) {
+                elbow.setPosition(0.8);
                 //go to stage 2
             }
 
@@ -173,6 +186,7 @@ public class jacksonTest extends LinearOpMode {
                 if ((saStage == 0 || spStage == 0) && !atOrigin) {
                     //bring claw to origin
                     atOrigin = true;
+                    elbow.setPosition(0.05);
                 }
             }
 
@@ -201,10 +215,10 @@ public class jacksonTest extends LinearOpMode {
 
 
 //             Send calculated power to wheels
-            frontLeftMotor.setPower(frontLeftPower);
-            backLeftMotor.setPower(backLeftPower);
-            frontRightMotor.setPower(frontRightPower);
-            backRightMotor.setPower(backRightPower);
+//            frontLeftMotor.setPower(frontLeftPower);
+//            backLeftMotor.setPower(backLeftPower);
+//            frontRightMotor.setPower(frontRightPower);
+//            backRightMotor.setPower(backRightPower);
 
 
         }
