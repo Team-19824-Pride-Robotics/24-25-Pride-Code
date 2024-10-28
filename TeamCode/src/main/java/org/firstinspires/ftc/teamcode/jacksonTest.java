@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -36,25 +37,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
-
-
-
-/*
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
- * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
- * of the FTC Driver Station. When a selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all linear OpModes contain.
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
- */
-
 @TeleOp(name="Jackson test")
-//@Disabled
+@Config
 public class jacksonTest extends LinearOpMode {
 
     // Declare OpMode members.
@@ -62,6 +46,15 @@ public class jacksonTest extends LinearOpMode {
 
     wrist Wrist;
     elbow Elbow;
+    //Slide heights
+    public static int saHeight1 = 0;
+    public static int spHeight1 = 0;
+    public static int saHeight2 = 0;
+    public static int spHeight2 = 0;
+
+    public static int saHeight3 = 0;
+    public static int baseHeight = 0;
+
 
     @Override
     public void runOpMode() {
@@ -69,26 +62,33 @@ public class jacksonTest extends LinearOpMode {
         telemetry.update();
 
        //Drive base config
-//        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
-//        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
-//        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
-//        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
+        DcMotor frontLeft = hardwareMap.dcMotor.get("frontLeftMotor");
+        DcMotor backLeft = hardwareMap.dcMotor.get("backLeftMotor");
+        DcMotor frontRight = hardwareMap.dcMotor.get("frontRightMotor");
+        DcMotor backRight = hardwareMap.dcMotor.get("backRightMotor");
         //Mechanism config
        Servo claw = hardwareMap.servo.get("claw");
        Servo backWrist = hardwareMap.servo.get("backWrist");
        Servo frontWrist = hardwareMap.servo.get("frontWrist");
        Servo elbow = hardwareMap.servo.get("armElbow");
-       Servo horizontalSlides = hardwareMap.servo.get("horizontalSlide");
+       Servo horizontalSlides1 = hardwareMap.servo.get("horizontalSlide1");
+        Servo horizontalSlides2 = hardwareMap.servo.get("horizontalSlide2");
+       Servo intake = hardwareMap.servo.get("intake");
+       Servo intakeBucket = hardwareMap.servo.get("intakeBucket");
        DcMotorEx verticalDownSlides = hardwareMap.get(DcMotorEx.class, "verticalDownSlides");
        DcMotorEx verticalUpSlides = hardwareMap.get(DcMotorEx.class, "verticalUpSlides");
+
         //Drivebase reversal
 //        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
 //        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        //Various drive code variables
+//Various drive code variables
         int spStage = -1;
         boolean atOrigin = true;
         int saStage = -1;
+        boolean intakeIsOut = false;
+        boolean slideAdjusted = false;
+
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -100,16 +100,16 @@ public class jacksonTest extends LinearOpMode {
 
             //close claw
             if (gamepad1.left_bumper){
-                backWrist.setPosition(0.99);
-                frontWrist.setPosition(0.99)
-                ;
-                elbow.setPosition(0.5);
+                backWrist.setPosition(0.35);
+                frontWrist.setPosition(0.35);
+                //elbow.setPosition(0.5);
             }
             //open claw
             if (gamepad1.right_bumper){
-                backWrist.setPosition(-0.99);
-                frontWrist.setPosition(-0.99);
-                elbow.setPosition(0.5);
+                backWrist.setPosition(0.05);
+                frontWrist.setPosition(0.05);
+                //elbow.setPosition(0.1);
+
             }
             //These controls are to control the outtake so that it can score a specimen
 
@@ -119,7 +119,7 @@ public class jacksonTest extends LinearOpMode {
             //that this code will just ignore
 
             // MESSAGE IF YAJIE IS LOOKING AT CODE:
-            //Don't delete this without talking to me first!
+            //Don't mess with this without talking to me first!
 
             //go up a stage if able
             if (gamepad1.y && spStage>=0 && spStage < 3){
@@ -140,13 +140,26 @@ public class jacksonTest extends LinearOpMode {
             if (spStage == 0) {
                 //go to stage 0
                 elbow.setPosition(0.8);
+                backWrist.setPosition(0.35);
+                frontWrist.setPosition(0.35);
+                verticalUpSlides.setTargetPosition(saHeight1);
+                verticalDownSlides.setTargetPosition(-saHeight1);
+
             }
             if (spStage == 1) {
                 elbow.setPosition(0.6);
+                backWrist.setPosition(0.35);
+                frontWrist.setPosition(0.35);
+                verticalUpSlides.setTargetPosition(spHeight1);
+                verticalDownSlides.setTargetPosition(-spHeight1);
                 //go to stage 1
             }
             if (spStage == 2) {
                 elbow.setPosition(0.6);
+                backWrist.setPosition(0.35);
+                frontWrist.setPosition(0.35);
+                verticalUpSlides.setTargetPosition(spHeight2);
+                verticalDownSlides.setTargetPosition(-spHeight2);
                 //go to stage 2
             }
 
@@ -171,14 +184,26 @@ public class jacksonTest extends LinearOpMode {
             }
             if (saStage == 0) {
                 //do nothing cuz sp and sa stage 0 are the same
+                slideAdjusted=false;
             }
             if (saStage == 1) {
                 elbow.setPosition(0.8);
+                backWrist.setPosition(0.35);
+                frontWrist.setPosition(0.35);
+                slideAdjusted=false;
+                verticalUpSlides.setTargetPosition(saHeight2);
+                verticalDownSlides.setTargetPosition(-saHeight2);
                 //go to stage 1
             }
             if (saStage == 2) {
                 elbow.setPosition(0.8);
+                backWrist.setPosition(0.35);
+                frontWrist.setPosition(0.35);
+                slideAdjusted=false;
+                verticalUpSlides.setTargetPosition(saHeight3);
+                verticalDownSlides.setTargetPosition(-saHeight3);
                 //go to stage 2
+
             }
 
             // Bring claw back to origin
@@ -187,21 +212,36 @@ public class jacksonTest extends LinearOpMode {
                     //bring claw to origin
                     atOrigin = true;
                     elbow.setPosition(0.05);
+                    slideAdjusted=false;
                 }
             }
 
 
             if(gamepad1.dpad_left){
-                if (!atOrigin && saStage!=0 && spStage !=0) {
+                if (!atOrigin && saStage!=0 && spStage !=0 && !slideAdjusted) {
                 //Bring slides down a little to hang a sample
+                    slideAdjusted=true;
 
+                } else if (!atOrigin && saStage!=0 && spStage !=0 && slideAdjusted) {
+                    //Bring slides up a little bit to reset if we miss the sample
+                    slideAdjusted=false;
                 }
 
             }
+            if(gamepad1.right_trigger>0.5){
+                if(!intakeIsOut) {
+                    //send out intake and raise bucket
+                } else {
+                    //turn on intake spinner and lower bucket
+                }
+            }
+            if(gamepad1.left_trigger>0.5){
+                //return intake
+            }
             //Drive code
-            double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = -gamepad1.right_stick_x;
+            double y = gamepad2.left_stick_y; // Remember, Y stick value is reversed
+            double x = -gamepad2.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = -gamepad2.right_stick_x;
 
 
 
@@ -211,14 +251,17 @@ public class jacksonTest extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-
+            frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
 //             Send calculated power to wheels
-//            frontLeftMotor.setPower(frontLeftPower);
-//            backLeftMotor.setPower(backLeftPower);
-//            frontRightMotor.setPower(frontRightPower);
-//            backRightMotor.setPower(backRightPower);
+            frontLeft.setPower(frontLeftPower);
+            backLeft.setPower(backLeftPower);
+            frontRight.setPower(frontRightPower);
+            backRight.setPower(backRightPower);
 
 
         }
