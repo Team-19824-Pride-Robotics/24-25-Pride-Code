@@ -55,7 +55,13 @@ public class jacksonTest extends LinearOpMode {
     public static int saHeight3 = 0;
     public static int baseHeight = 0;
 
+    public static double HPos = 0.12;
 
+    public static double HPos2 = 0.4;
+
+    public static double Bpos = 0.08;
+
+    public static double Bpos2 = 0.47;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -71,8 +77,8 @@ public class jacksonTest extends LinearOpMode {
        Servo backWrist = hardwareMap.servo.get("backWrist");
        Servo frontWrist = hardwareMap.servo.get("frontWrist");
        Servo elbow = hardwareMap.servo.get("armElbow");
-       Servo horizontalSlides1 = hardwareMap.servo.get("horizontalSlide1");
-        Servo horizontalSlides2 = hardwareMap.servo.get("horizontalSlide2");
+       Servo horizontalSlides1 = hardwareMap.servo.get("horizontalSlides1");
+        Servo horizontalSlides2 = hardwareMap.servo.get("horizontalSlides2");
        Servo intake = hardwareMap.servo.get("intake");
        Servo intakeBucket = hardwareMap.servo.get("intakeBucket");
        DcMotorEx verticalDownSlides = hardwareMap.get(DcMotorEx.class, "verticalDownSlides");
@@ -102,14 +108,16 @@ public class jacksonTest extends LinearOpMode {
             if (gamepad1.left_bumper){
                 backWrist.setPosition(0.35);
                 frontWrist.setPosition(0.35);
-                //elbow.setPosition(0.5);
+                intakeBucket.setPosition(Bpos);
+
             }
-            //open claw
+            ///open claw
             if (gamepad1.right_bumper){
                 backWrist.setPosition(0.05);
                 frontWrist.setPosition(0.05);
-                //elbow.setPosition(0.1);
+                intakeBucket.setPosition(Bpos2);
 
+//language=
             }
             //These controls are to control the outtake so that it can score a specimen
 
