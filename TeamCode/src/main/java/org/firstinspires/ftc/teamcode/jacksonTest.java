@@ -232,7 +232,7 @@ public class jacksonTest extends LinearOpMode {
                     slideAdjusted=false;
                 }
             }
-
+//cool
 
             if(gamepad1.dpad_left){
                 if (!atOrigin && saStage!=0 && spStage !=0 && !slideAdjusted) {
