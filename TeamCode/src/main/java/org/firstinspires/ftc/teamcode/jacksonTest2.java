@@ -39,9 +39,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="Pride robot 2 player")
+@TeleOp(name="Pride robot 1 player")
 @Config
-public class jacksonTest extends LinearOpMode {
+public class jacksonTest2 extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -265,9 +265,9 @@ public class jacksonTest extends LinearOpMode {
                 intake.setPower(0);
             }
             //Drive code
-            double y = gamepad2.left_stick_y; // Remember, Y stick value is reversed
-            double x = -gamepad2.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = -gamepad2.right_stick_x;
+            double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = -gamepad1.right_stick_x;
 
 
 
