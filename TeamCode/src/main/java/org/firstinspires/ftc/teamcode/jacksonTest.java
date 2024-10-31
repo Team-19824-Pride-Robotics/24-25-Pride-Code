@@ -137,29 +137,36 @@ public class jacksonTest extends LinearOpMode {
                     intakeBucket.setPosition(Bpos2);
                 }
             }
-            //These controls are to control the outtake so that it can score a specimen
+            //These controls are to control the outtake so that it can score a sample
 
 
             // MESSAGE IF YAJIE IS LOOKING AT CODE:
             //Don't mess with this without talking to me first!
 
-            //Also message to Yajie: I got sample and specimen mixed up, so if yr writing code
-            //keep that in mind, or fix it idgaf lol
+
             //go up a stage if able
-            if (gamepad1.y && spStage>=0 && spStage < 3){
-                spStage = spStage+1;
-                saStage = -1;
+            if (gamepad1.y && saStage>=0 && saStage < 3){
+                saStage = saStage+1;
+                spStage = -1;
                 atOrigin=false;
             }
             //go down a stage if able
-            if (gamepad1.a && spStage>0 && spStage <= 3){
-                spStage = spStage - 1;
+            if (gamepad1.a && saStage>0 && saStage <= 3){
+                saStage = saStage - 1;
 
-            } //go to stage 1
+            } //go to stage 1 from origin
             if (gamepad1.b && atOrigin){
-                spStage = 0;
                 saStage = 0;
+                spStage = 0;
                 atOrigin=false;
+            }
+            if(gamepad1.x) {
+                if ((saStage == 0 || spStage == 0)) {
+                    //bring claw to origin
+                    atOrigin = true;
+                    elbow.setPosition(Epos1);
+                    slideAdjusted=false;
+                }
             }
             if (spStage == 0) {
                 //go to stage 0
@@ -187,27 +194,23 @@ public class jacksonTest extends LinearOpMode {
 
 
 
-            //same deal as the previous code, but this is for the sample positions instead
-            //of the specimen positions
-            if (gamepad1.dpad_up && saStage>=0 && saStage < 3){
-                saStage = saStage+1;
-                spStage = -1;
+            //same deal as the previous code, but this is for the specimen positions instead
+            //of the sample positions
+            if (gamepad1.dpad_up && spStage>=0 && spStage < 3){
+                spStage = spStage+1;
+                saStage = -1;
                 atOrigin=false;
             }
-            if (gamepad1.dpad_down && saStage>0 && saStage <= 3){
-                saStage = saStage - 1;
+            if (gamepad1.dpad_down && spStage>0 && spStage <= 3){
+                spStage = spStage - 1;
 
             }
-            if (gamepad1.dpad_right && atOrigin){
-                saStage = 0;
-                spStage = 0;
-                atOrigin=false;
-            }
-            if (saStage == 0) {
+
+            if (spStage == 0) {
                 //do nothing cuz sp and sa stage 0 are the same
                 slideAdjusted=false;
             }
-            if (saStage == 1) {
+            if (spStage == 1) {
                 elbow.setPosition(Epos3);
 
                 slideAdjusted=false;
@@ -215,7 +218,7 @@ public class jacksonTest extends LinearOpMode {
                 verticalDownSlides.setTargetPosition(-saHeight2);
                 //go to stage 1
             }
-            if (saStage == 2) {
+            if (spStage == 2) {
                 elbow.setPosition(Epos3);
 
                 slideAdjusted=false;
@@ -226,14 +229,7 @@ public class jacksonTest extends LinearOpMode {
             }
 
             // Bring claw back to origin
-            if(gamepad1.x) {
-                if ((saStage == 0 || spStage == 0)) {
-                    //bring claw to origin
-                    atOrigin = true;
-                    elbow.setPosition(Epos1);
-                    slideAdjusted=false;
-                }
-            }
+
 //cool
 
             if(gamepad1.dpad_left){
