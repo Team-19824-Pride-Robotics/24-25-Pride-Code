@@ -134,8 +134,6 @@ public class jacksonTest extends LinearOpMode {
         runtime.reset();
 
 
-            //elbow.setPosition(Epos1);
-
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -155,24 +153,29 @@ public class jacksonTest extends LinearOpMode {
             //Claw controls
 
             //close claw
+//            frontWrist.setPosition(-Wpos1);
+//            backWrist.setPosition(Wpos1);
+//            elbow.setPosition(Epos2);
             if (gamepad1.left_bumper){
-                if(!intakeIsOut) {
-                    claw.setPosition(Cpos2);
-                    elbow.setPosition(Epos1);
-                } else {
-                    intake.setPower(1);
-                }
-
+//                if(!intakeIsOut) {
+//                    claw.setPosition(Cpos2);
+//                    elbow.setPosition(Epos1);
+//                } else {
+//                    intake.setPower(1);
+//                }
+                elbow.setPosition(Epos1);
             }
             ///open claw
             if (gamepad1.right_bumper){
-                if(!intakeIsOut) {
-                claw.setPosition(Cpos);
-                elbow.setPosition(Epos3);
-                } else{
-                    intake.setPower(-1);
-                    intakeBucket.setPosition(Bpos2);
-                }
+//                if(!intakeIsOut) {
+//                claw.setPosition(Cpos);
+//                elbow.setPosition(Epos3);
+//                } else{
+//                    intake.setPower(-1);
+//                    intakeBucket.setPosition(Bpos2);
+//                }
+                elbow.setPosition(Epos2);
+
             }
             //These controls are to control the outtake so that it can score a sample
 
@@ -325,7 +328,7 @@ public class jacksonTest extends LinearOpMode {
             frontRight.setPower(frontRightPower);
             backRight.setPower(backRightPower);
 
-            telemetry.addData("target", target);
+            telemetry.addData("target", frontWrist.getPosition());
             telemetry.addData("Run time", getRuntime());
             telemetry.addData("1", "test");
             telemetry.addData("pos1", lift1.getCurrentPosition());
