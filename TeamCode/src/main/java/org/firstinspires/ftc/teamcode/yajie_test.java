@@ -5,7 +5,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-//import com.acrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 public class yajie_test extends OpMode {
 
     //pid
-    //private PIDController controller;
+    private PIDController controller;
     public static double p = 0.005, i = 0, d = 0;
     public static double f = 0;
     public static double target = 0;
@@ -112,18 +112,18 @@ public class yajie_test extends OpMode {
         }
 
 
-        //controller.setPID(p, i, d);
+        controller.setPID(p, i, d);
         int liftPos1 = lift1.getCurrentPosition();
         int liftPos2 = lift2.getCurrentPosition();
-//        double pid = controller.calculate(liftPos1, target);
-//        double pid2 = controller.calculate(liftPos2, target);
+        double pid = controller.calculate(liftPos1, target);
+        double pid2 = controller.calculate(liftPos2, target);
         double ff = 0;
 
-//        double lPower1 = pid + ff;
-//        double lPower2 = pid2 + ff;
+       double lPower1 = pid + ff;
+     double lPower2 = pid2 + ff;
 
-//        lift1.setPower(lPower1);
-//        lift2.setPower(lPower2);
+     lift1.setPower(lPower1);
+        lift2.setPower(lPower2);
 
 
         telemetry.addData("target", target);

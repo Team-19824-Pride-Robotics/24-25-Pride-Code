@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -46,15 +47,24 @@ public class jacksonTest extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
 
+    //lift pid
+    public static double p = 0.005, i = 0, d = 0;
+    public static double f = 0;
+    public static double target = 0;
+    public static double target2 = 110;
+    public static double target1 = 110;
+
+    private PIDController controller;
+
     wrist Wrist;
     elbow Elbow;
     //Slide heights
-    public static int saHeight1 = 0;
+    public static int saHeight1 = 1300;
     public static int spHeight1 = 0;
-    public static int saHeight2 = 0;
-    public static int spHeight2 = 0;
+    public static int saHeight2 = 3000;
+    public static int spHeight2 = 1000;
 
-    public static int saHeight3 = 0;
+
     public static int baseHeight = 0;
 
     public static double HPos = 0.12;
@@ -72,11 +82,14 @@ public class jacksonTest extends LinearOpMode {
     public static double Cpos = 1;
 
     public static double Cpos2 = 0.7;
+
+    DcMotorEx lift1;
+    DcMotorEx lift2;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
+        controller = new PIDController(p, i, d);
        //Drive base config
         DcMotor frontLeft = hardwareMap.dcMotor.get("frontLeftMotor");
         DcMotor backLeft = hardwareMap.dcMotor.get("backLeftMotor");
@@ -91,8 +104,14 @@ public class jacksonTest extends LinearOpMode {
         Servo horizontalSlides2 = hardwareMap.servo.get("horizontalSlides2");
        CRServo intake = hardwareMap.get(CRServo.class, "intake");
        Servo intakeBucket = hardwareMap.servo.get("intakeBucket");
-       DcMotorEx verticalDownSlides = hardwareMap.get(DcMotorEx.class, "verticalDownSlides");
-       DcMotorEx verticalUpSlides = hardwareMap.get(DcMotorEx.class, "verticalUpSlides");
+       //lift
+        lift1 = hardwareMap.get(DcMotorEx.class, "lift1");
+        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
+        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift2.setDirection(DcMotorEx.Direction.REVERSE);
 
         //Drivebase reversal
 //        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -115,7 +134,19 @@ public class jacksonTest extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            //Pid stuff lol
+            controller.setPID(p, i, d);
+            int liftPos1 = lift1.getCurrentPosition();
+            int liftPos2 = lift2.getCurrentPosition();
+            double pid = controller.calculate(liftPos1, target);
+            double pid2 = controller.calculate(liftPos2, target);
+            double ff = 0;
 
+            double lPower1 = pid + ff;
+            double lPower2 = pid2 + ff;
+
+            lift1.setPower(lPower1);
+            lift2.setPower(lPower2);
             //Claw controls
 
             //close claw
@@ -126,6 +157,7 @@ public class jacksonTest extends LinearOpMode {
                 } else {
                     intake.setPower(1);
                 }
+
             }
             ///open claw
             if (gamepad1.right_bumper){
@@ -149,6 +181,7 @@ public class jacksonTest extends LinearOpMode {
                 saStage = saStage+1;
                 spStage = -1;
                 atOrigin=false;
+
             }
             //go down a stage if able
             if (gamepad1.a && saStage>0 && saStage <= 3){
@@ -172,22 +205,19 @@ public class jacksonTest extends LinearOpMode {
                 //go to stage 0
                 elbow.setPosition(Epos3);
 
-                verticalUpSlides.setTargetPosition(saHeight1);
-                verticalDownSlides.setTargetPosition(-saHeight1);
+                
 
             }
             if (spStage == 1) {
                 elbow.setPosition(Epos2);
+                target=spHeight1;
 
-                verticalUpSlides.setTargetPosition(spHeight1);
-                verticalDownSlides.setTargetPosition(-spHeight1);
                 //go to stage 1
             }
             if (spStage == 2) {
                 elbow.setPosition(Epos2);
+                target=spHeight2;
 
-                verticalUpSlides.setTargetPosition(spHeight2);
-                verticalDownSlides.setTargetPosition(-spHeight2);
                 //go to stage 2
             }
 
@@ -214,16 +244,14 @@ public class jacksonTest extends LinearOpMode {
                 elbow.setPosition(Epos3);
 
                 slideAdjusted=false;
-                verticalUpSlides.setTargetPosition(saHeight2);
-                verticalDownSlides.setTargetPosition(-saHeight2);
+
                 //go to stage 1
             }
             if (spStage == 2) {
                 elbow.setPosition(Epos3);
 
                 slideAdjusted=false;
-                verticalUpSlides.setTargetPosition(saHeight3);
-                verticalDownSlides.setTargetPosition(-saHeight3);
+
                 //go to stage 2
 
             }
@@ -260,10 +288,12 @@ public class jacksonTest extends LinearOpMode {
             if(!intakeIsOut) {
                 intake.setPower(0);
             }
+            //slides
+
             //Drive code
-            double y = gamepad2.left_stick_y; // Remember, Y stick value is reversed
-            double x = -gamepad2.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = -gamepad2.right_stick_x;
+            double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = -gamepad1.right_stick_x;
 
 
 
@@ -273,12 +303,9 @@ public class jacksonTest extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
+//pid
 
 
             frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -292,6 +319,14 @@ public class jacksonTest extends LinearOpMode {
             frontRight.setPower(frontRightPower);
             backRight.setPower(backRightPower);
 
+            telemetry.addData("target", target);
+            telemetry.addData("Run time", getRuntime());
+            telemetry.addData("1", "test");
+            telemetry.addData("pos1", lift1.getCurrentPosition());
+            telemetry.addData("power1", lift1.getPower());
+            telemetry.addData("pos2", lift2.getCurrentPosition());
+            telemetry.addData("power2", lift2.getPower());
+            telemetry.update();
 
         }
     }
