@@ -83,6 +83,11 @@ public class jacksonTest extends LinearOpMode {
 
     public static double Cpos2 = 0.7;
 
+    public static double Wpos1 = 0.7;
+
+    public static double Wpos2 = 0.7;
+    public static double Wpos3 = 0.7;
+
     DcMotorEx lift1;
     DcMotorEx lift2;
     @Override
@@ -129,7 +134,7 @@ public class jacksonTest extends LinearOpMode {
         runtime.reset();
 
 
-            elbow.setPosition(Epos1);
+            //elbow.setPosition(Epos1);
 
 
         // run until the end of the match (driver presses STOP)
@@ -201,22 +206,22 @@ public class jacksonTest extends LinearOpMode {
                     slideAdjusted=false;
                 }
             }
-            if (spStage == 0) {
+            if (saStage == 0) {
                 //go to stage 0
                 elbow.setPosition(Epos3);
+                target=0;
 
-                
 
             }
-            if (spStage == 1) {
+            if (saStage == 1) {
                 elbow.setPosition(Epos2);
-                target=spHeight1;
+                target=saHeight1;
 
                 //go to stage 1
             }
-            if (spStage == 2) {
+            if (saStage == 2) {
                 elbow.setPosition(Epos2);
-                target=spHeight2;
+                target=saHeight2;
 
                 //go to stage 2
             }
@@ -242,14 +247,14 @@ public class jacksonTest extends LinearOpMode {
             }
             if (spStage == 1) {
                 elbow.setPosition(Epos3);
-
+                target=spHeight1;
                 slideAdjusted=false;
 
                 //go to stage 1
             }
             if (spStage == 2) {
                 elbow.setPosition(Epos3);
-
+                target=spHeight2;
                 slideAdjusted=false;
 
                 //go to stage 2
@@ -276,6 +281,7 @@ public class jacksonTest extends LinearOpMode {
                     //send out intake and raise bucket
                     horizontalSlides1.setPosition(HPos2);
                     horizontalSlides2.setPosition(HPos2);
+                    intake.setPower(1);
                     intakeIsOut = true;
                 }
             }
