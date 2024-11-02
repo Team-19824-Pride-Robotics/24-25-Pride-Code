@@ -118,9 +118,7 @@ public class jacksonTest extends LinearOpMode {
         lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lift2.setDirection(DcMotorEx.Direction.REVERSE);
 
-        //Drivebase reversal
-//        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
-//        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+
 //Various drive code variables
         int spStage = -1;
         boolean atOrigin = true;
@@ -153,28 +151,26 @@ public class jacksonTest extends LinearOpMode {
             //Claw controls
 
             //close claw
-//            frontWrist.setPosition(-Wpos1);
-//            backWrist.setPosition(Wpos1);
-//            elbow.setPosition(Epos2);
+//
             if (gamepad1.left_bumper){
-//                if(!intakeIsOut) {
-//                    claw.setPosition(Cpos2);
-//                    elbow.setPosition(Epos1);
-//                } else {
-//                    intake.setPower(1);
-//                }
+                if(!intakeIsOut) {
+                    claw.setPosition(Cpos2);
+                    elbow.setPosition(Epos1);
+                } else {
+                    intake.setPower(1);
+                }
                 elbow.setPosition(Epos1);
             }
             ///open claw
             if (gamepad1.right_bumper){
-//                if(!intakeIsOut) {
-//                claw.setPosition(Cpos);
-//                elbow.setPosition(Epos3);
-//                } else{
-//                    intake.setPower(-1);
-//                    intakeBucket.setPosition(Bpos2);
-//                }
-                elbow.setPosition(Epos2);
+                if(!intakeIsOut) {
+                claw.setPosition(Cpos);
+                elbow.setPosition(Epos3);
+                } else{
+                    intake.setPower(-1);
+                    intakeBucket.setPosition(Bpos2);
+                }
+
 
             }
             //These controls are to control the outtake so that it can score a sample
@@ -195,18 +191,21 @@ public class jacksonTest extends LinearOpMode {
             if (gamepad1.a && saStage>0 && saStage <= 3){
                 saStage = saStage - 1;
 
-            } //go to stage 1 from origin
+            } //EXIT ORIGIN
             if (gamepad1.b && atOrigin){
                 saStage = 0;
                 spStage = 0;
                 atOrigin=false;
             }
+            //ENTER ORIGIN
             if(gamepad1.x) {
                 if ((saStage == 0 || spStage == 0)) {
                     //bring claw to origin
                     atOrigin = true;
                     elbow.setPosition(Epos1);
                     slideAdjusted=false;
+                    saStage = -1;
+                    spStage = -1;
                 }
             }
             if (saStage == 0) {
@@ -234,57 +233,56 @@ public class jacksonTest extends LinearOpMode {
 
             //same deal as the previous code, but this is for the specimen positions instead
             //of the sample positions
-            if (gamepad1.dpad_up && spStage>=0 && spStage < 3){
-                spStage = spStage+1;
-                saStage = -1;
-                atOrigin=false;
-            }
-            if (gamepad1.dpad_down && spStage>0 && spStage <= 3){
-                spStage = spStage - 1;
+//            if (gamepad1.dpad_up && spStage>=0 && spStage < 3){
+//                spStage = spStage+1;
+//                saStage = -1;
+//                atOrigin=false;
+//            }
+//            if (gamepad1.dpad_down && spStage>0 && spStage <= 3){
+//                spStage = spStage - 1;
+//
+//            }
+//
+//            if (spStage == 0) {
+//                //do nothing cuz sp and sa stage 0 are the same
+//                slideAdjusted=false;
+//            }
+//            if (spStage == 1) {
+//                elbow.setPosition(Epos3);
+//                target=spHeight1;
+//                slideAdjusted=false;
+//
+//                //go to stage 1
+//            }
+//            if (spStage == 2) {
+//                elbow.setPosition(Epos3);
+//                target=spHeight2;
+//                slideAdjusted=false;
+//
+//                //go to stage 2
+//
+//            }
+//
+//            // Bring claw back to origin
+//
+////cool
+//
+//            if(gamepad1.dpad_left){
+//                if (!atOrigin && saStage!=0 && spStage !=0 && !slideAdjusted) {
+//                //Bring slides down a little to hang a sample
+//                    slideAdjusted=true;
+//
+//                } else if (!atOrigin && saStage!=0 && spStage !=0 && slideAdjusted) {
+//                    //Bring slides up a little bit to reset if we miss the sample
+//                    slideAdjusted=false;
+//                }
 
-            }
-
-            if (spStage == 0) {
-                //do nothing cuz sp and sa stage 0 are the same
-                slideAdjusted=false;
-            }
-            if (spStage == 1) {
-                elbow.setPosition(Epos3);
-                target=spHeight1;
-                slideAdjusted=false;
-
-                //go to stage 1
-            }
-            if (spStage == 2) {
-                elbow.setPosition(Epos3);
-                target=spHeight2;
-                slideAdjusted=false;
-
-                //go to stage 2
-
-            }
-
-            // Bring claw back to origin
-
-//cool
-
-            if(gamepad1.dpad_left){
-                if (!atOrigin && saStage!=0 && spStage !=0 && !slideAdjusted) {
-                //Bring slides down a little to hang a sample
-                    slideAdjusted=true;
-
-                } else if (!atOrigin && saStage!=0 && spStage !=0 && slideAdjusted) {
-                    //Bring slides up a little bit to reset if we miss the sample
-                    slideAdjusted=false;
-                }
-
-            }
+            //}
             if(gamepad1.right_trigger>0.5){
                 if(!intakeIsOut) {
                     //send out intake and raise bucket
                     horizontalSlides1.setPosition(HPos2);
                     horizontalSlides2.setPosition(HPos2);
-                    intake.setPower(1);
                     intakeIsOut = true;
                 }
             }
