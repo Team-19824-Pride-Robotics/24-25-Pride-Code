@@ -125,7 +125,7 @@ public class jacksonTest extends LinearOpMode {
         int saStage = -1;
         boolean intakeIsOut = false;
         boolean slideAdjusted = false;
-
+        boolean stupidButton = false;
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -155,17 +155,17 @@ public class jacksonTest extends LinearOpMode {
             if (gamepad1.left_bumper){
                 if(!intakeIsOut) {
                     claw.setPosition(Cpos2);
-                    elbow.setPosition(Epos1);
+
                 } else {
                     intake.setPower(1);
                 }
-                elbow.setPosition(Epos1);
+
             }
             ///open claw
             if (gamepad1.right_bumper){
                 if(!intakeIsOut) {
                 claw.setPosition(Cpos);
-                elbow.setPosition(Epos3);
+
                 } else{
                     intake.setPower(-1);
                     intakeBucket.setPosition(Bpos2);
@@ -181,16 +181,22 @@ public class jacksonTest extends LinearOpMode {
 
 
             //go up a stage if able
-            if (gamepad1.y && saStage>=0 && saStage < 3){
-                saStage = saStage+1;
-                spStage = -1;
-                atOrigin=false;
-
+            if (gamepad1.y && saStage < 3 && saStage>=0){
+                if (!stupidButton) {
+                    saStage = saStage + 1;
+                    spStage = -1;
+                    stupidButton=true;
+                }
+            }
+            if(!gamepad1.y && !gamepad1.a){
+                stupidButton=false;
             }
             //go down a stage if able
-            if (gamepad1.a && saStage>0 && saStage <= 3){
-                saStage = saStage - 1;
-
+            if (gamepad1.a && saStage>0){
+                if(!stupidButton) {
+                    saStage = saStage - 1;
+                    stupidButton = true;
+                }
             } //EXIT ORIGIN
             if (gamepad1.b && atOrigin){
                 saStage = 0;
@@ -298,9 +304,9 @@ public class jacksonTest extends LinearOpMode {
             //slides
 
             //Drive code
-            double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = -gamepad1.right_stick_x;
+            double y = gamepad2.left_stick_y; // Remember, Y stick value is reversed
+            double x = -gamepad2.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = -gamepad2.right_stick_x;
 
 
 
